@@ -1,3 +1,5 @@
+import { Map } from 'rot-js';
+
 class World {
   constructor(width, height, tileSize) {
     this.width = width;
@@ -9,15 +11,21 @@ class World {
     }
     // (x,y) = 0 : open space
     // (x,y) = 1 : wall
-    this.createRandomMap();
+    this.createCellularMap();
   };
 
-  createRandomMap() {
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        this.worldMap[x][y] = Math.round(Math.random());
+  createCellularMap() {
+    const map = new Map.Cellular(this.width, this.height, {connected: true});
+    map.randomize(0.5);
+    const userCallback = (x,y,value) => {
+      if (x === 0 || y === 0 || x === this.width - 1 || y === this.height - 1) {
+        this.worldMap[x][y] = 1; // walls around the edge of the world
+        return;
       }
-    }
+      this.worldMap[x][y] = value === 0 ? 1 : 0;
+    };
+    map.create(userCallback);
+    map.connect(userCallback, 1);
   };
 
   draw(context) {
