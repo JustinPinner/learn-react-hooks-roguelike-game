@@ -4,9 +4,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 # Important
 
-This project was created by following [https://www.udemy.com/user/morganpage2/](Morgan Page)'s course
+This project was created by following [Morgan Page]'s(https://www.udemy.com/user/morganpage2/) course
 
-### [https://www.udemy.com/course/react-learn-react-with-hooks-by-creating-a-roguelike-game/](React - Learn React with Hooks by creating a Roguelike game)
+### [React - Learn React with Hooks by creating a Roguelike game](https://www.udemy.com/course/react-learn-react-with-hooks-by-creating-a-roguelike-game/)
 
 on Udemy, where "Coding a roguelike game is  a great way to learn the fundamentals of React, Hooks and useful generic game concepts like movement, combat and inventories."
 
