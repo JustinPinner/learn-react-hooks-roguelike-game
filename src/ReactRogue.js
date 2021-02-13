@@ -21,6 +21,7 @@ const ReactRogue = ({width, height, tileSize}) => {
     let newWorld = new World();
     Object.assign(newWorld, world);
     newWorld.createCellularMap();
+    newWorld.spawnLoot();
     setWorld(newWorld);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // empty list param to useEffect equates to first time render only (no dependencies) :rolleyes:

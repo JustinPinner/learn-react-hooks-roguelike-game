@@ -1,12 +1,25 @@
 import { Map } from 'rot-js';
 import Player from './Player';
+import Spawner from './Spawner';
 
 const WorldEntity = {
   EMPTY: 0,
   WALL: 1,
+  LONGSWORD: 2,
+  HEALTH: 3,
+  GOLD: 4,
+  LIGHTARMOUR: 5,
   UNKNOWN: 999
-}
+};
+
 Object.freeze(WorldEntity);
+
+const LootTable = [
+  { id: WorldEntity.LONGSWORD, name: 'Longsword', colour: 'darkgrey', ascii: '/', offset: {x: 6, y: 3} },
+  { id: WorldEntity.HEALTH, name: 'Health', colour: 'red', ascii: '!', offset: {x: 6, y: 3} },
+  { id: WorldEntity.GOLD, name: 'Gold', colour: 'yellow', ascii: '$', offset: {x: 3, y: 3} },
+  { id: WorldEntity.LIGHTARMOUR, name: 'Light Armour', colour: 'lightgrey', ascii: '#', offset: {x: 4, y: 3} }
+];
 
 class World {
   constructor(width, height, tileSize) {
@@ -14,11 +27,14 @@ class World {
     this.height = height;
     this.tileSize = tileSize;
     this.entities = [];
+    this.lootTable = LootTable;
 
     this.worldMap = new Array(this.width);
     for (let x = 0; x < this.width; x++) {
       this.worldMap[x] = new Array(this.height);
     }
+
+    this.spawner = new Spawner(this);
   };
 
   get player() {
@@ -46,18 +62,6 @@ class World {
     // if every possible value that worldMap can contain is represented 
     // by a WorldEntity constant we can just return the contained value
     return this.worldMap[x][y];
-
-    // otherwise we'd have to apply some kind of translation
-    // switch (this.worldMap[x][y]) {
-    //   case WorldEntity.EMPTY:
-    //     return WorldEntity.EMPTY;
-    //   case WorldEntity.WALL:
-    //     return WorldEntity.WALL;
-    //   case 42:
-    //     return 'BEER';
-    //   default:
-    //     return WorldEntity.UNKNOWN;
-    // }
   };
 
   createCellularMap() {
@@ -77,10 +81,44 @@ class World {
     map.connect(userCallback, 1);
   };
 
+  spawnLoot() {
+    this.spawner.spawnLoot(Math.floor(Math.random() * 8));
+  }
+
+  findRandomSpace() {
+    let x = Math.floor(Math.random() * this.worldMap.length - 1);
+    let y = Math.floor(Math.random() * this.worldMap[0].length - 1);
+    let tries = 0;
+    let searchSpace = this.worldMap.length * this.worldMap[0].length;
+    let available = false;
+    while (!available && tries < searchSpace) {
+      if (this.whatsAt(x, y) === WorldEntity.EMPTY) {
+        available = true;
+        break;
+      }
+      x = Math.floor(Math.random() * this.worldMap.length - 1);
+      y = Math.floor(Math.random() * this.worldMap[0].length - 1);
+      tries++;
+    };
+    return available ? { x: x, y: y } : undefined;
+  };
+
+  add(entity) {
+    let location = this.findRandomSpace();
+    if (location) {
+      this.worldMap[location.x][location.y] = entity.attributes.id;
+      entity.x = location.x;
+      entity.y = location.y;
+      this.entities.push(entity);
+      return true;
+    }
+    return false;
+  }
+
   draw(context) {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        if (this.worldMap[x][y] === 1) {
+        if (this.worldMap[x][y] === WorldEntity.WALL) {
           this.drawWall(context, x, y);
         }
       }

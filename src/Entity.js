@@ -5,7 +5,11 @@ class Entity {
     this.y = y;
     this.size = size;
     this.attributes = { ...attributes };
-  }
+  };
+
+  action(verb, world) {
+    console.log(`Verb: ${verb} unhandled on ${this.attributes ? this.attributes.name : 'no name'}`);
+  };
 
   draw(context) {
     context.fillStyle = this.attributes.colour || 'white';
@@ -18,6 +22,6 @@ class Entity {
     );
   };
 
-}
+};
 
 export default Entity;
