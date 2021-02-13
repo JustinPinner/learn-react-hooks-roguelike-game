@@ -4,7 +4,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 # Important
 
-This project was created by following [Morgan Page]'s(https://www.udemy.com/user/morganpage2/) course
+This project was created by following [Morgan Page](https://www.udemy.com/user/morganpage2/)'s course
 
 ### [React - Learn React with Hooks by creating a Roguelike game](https://www.udemy.com/course/react-learn-react-with-hooks-by-creating-a-roguelike-game/)
 
