@@ -1,22 +1,29 @@
 import React, { useRef, useEffect, useState } from 'react';
 import InputManager from './InputManager';
-import Player from './Player';
 import World from './World';
 
 const ReactRogue = ({width, height, tileSize}) => { 
   const canvasRef = useRef();
-  const [player, setPlayer] = useState(new Player(1,2,tileSize));
   const [world, setWorld] = useState(new World(width, height, tileSize));
 
   let inputManager = new InputManager();
 
   const handleInput = (action, data) => {
     // console.log(`Handling input... ${action}:${JSON.stringify(data)}`);
-    let newPlayer = new Player();
-    Object.assign(newPlayer, player);
-    newPlayer.move(data.x, data.y);
-    setPlayer(newPlayer);
+    let newWorld = new World();
+    Object.assign(newWorld, world);
+    newWorld.movePlayer(data.x, data.y);
+    setWorld(newWorld);
   };
+
+  useEffect(() => {
+    // draw the map (for the first time, and once only)
+    let newWorld = new World();
+    Object.assign(newWorld, world);
+    newWorld.createCellularMap();
+    setWorld(newWorld);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // empty list param to useEffect equates to first time render only (no dependencies) :rolleyes:
 
   useEffect(() => {
     // console.log('Bind input');
@@ -35,7 +42,6 @@ const ReactRogue = ({width, height, tileSize}) => {
     const ctx = canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, width * tileSize, height * tileSize);
     world.draw(ctx);
-    player.draw(ctx);
   });
 
   return (
