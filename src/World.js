@@ -58,7 +58,7 @@ class World {
     //   default:
     //     return WorldEntity.UNKNOWN;
     // }
-  }
+  };
 
   createCellularMap() {
     const map = new Map.Cellular(this.width, this.height, {connected: true});
