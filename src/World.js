@@ -1,5 +1,5 @@
 import { Map } from 'rot-js';
-import WorldEntity from './WorldEntity';
+import WorldEntityTypes from './WorldEntityTypes';
 import Player from './Player';
 import Spawner from './Spawner';
 
@@ -19,7 +19,7 @@ class World {
   };
 
   get player() {
-    return this.entities[0];
+    return this.entities.filter((entity) => { return entity.attributes.type == WorldEntityTypes.PLAYER;})[0];
   }
 
   movePlayer(dx, dy) {
@@ -27,9 +27,18 @@ class World {
     const dx2 = dx + this.player.x;
     const dy2 = dy + this.player.y;
     // what's there? can we move?
-    switch (this.whatsAt(dx2, dy2)) {
-      case WorldEntity.WALL:
+    const entity = this.whatsAt(dx2, dy2);
+    switch (entity.attributes ? entity.attributes.type : entity) {
+      case WorldEntityTypes.WALL:
         break;
+
+      case WorldEntityTypes.LOOT:
+        this.player.addInventory(entity);
+        this.entities = this.entities.filter((worldEntity) => { return worldEntity !== entity; });
+        this.worldMap[dx2][dy2] = WorldEntityTypes.NOTHING;
+        this.player.move(dx, dy);
+        break;
+
       default:
         this.player.move(dx, dy);
         break;
@@ -38,10 +47,8 @@ class World {
 
   whatsAt(x, y) {
     if (x < 0 || x > this.worldMap.length - 1) return; // 'invalid x'
-    if (y < 0 || y > this.worldMap[0].length - 1) return; // 'invalid y'
-    
-    // if every possible value that worldMap can contain is represented 
-    // by a WorldEntity constant we can just return the contained value
+    if (y < 0 || y > this.worldMap[0].length - 1) return; // 'invalid y'  
+    // worldMap can contain 0 (NOTHING), 1 (WALL), or an Entity type
     return this.worldMap[x][y];
   };
 
@@ -53,9 +60,9 @@ class World {
         this.worldMap[x][y] = 1; // walls around the edge of the world
         return;
       }
-      this.worldMap[x][y] = value === 0 ? 1 : 0;
-      if (!this.entities[0] && this.worldMap[x][y] === 0) {
-        this.entities[0] = new Player(x, y, 16);
+      this.worldMap[x][y] = value === 0 ? WorldEntityTypes.WALL : WorldEntityTypes.NOTHING;
+      if (!this.player && this.worldMap[x][y] === WorldEntityTypes.NOTHING) {
+        this.entities.push(new Player(x, y));
       }
     };
     map.create(userCallback);
@@ -73,7 +80,7 @@ class World {
     let searchSpace = this.worldMap.length * this.worldMap[0].length;
     let available = false;
     while (!available && tries < searchSpace) {
-      if (this.whatsAt(x, y) === WorldEntity.EMPTY) {
+      if (this.whatsAt(x, y) === WorldEntityTypes.NOTHING) {
         available = true;
         break;
       }
@@ -87,19 +94,19 @@ class World {
   add(entity) {
     let location = this.findRandomSpace();
     if (location) {
-      this.worldMap[location.x][location.y] = entity.attributes.id;
+      this.worldMap[location.x][location.y] = entity;
       entity.x = location.x;
       entity.y = location.y;
       this.entities.push(entity);
       return true;
     }
     return false;
-  }
+  };
 
   draw(context) {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        if (this.worldMap[x][y] === WorldEntity.WALL) {
+        if (this.worldMap[x][y] === WorldEntityTypes.WALL) {
           this.drawWall(context, x, y);
         }
       }

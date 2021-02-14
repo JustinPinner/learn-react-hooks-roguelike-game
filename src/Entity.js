@@ -1,9 +1,8 @@
 
 class Entity {
-  constructor(x, y, size, attributes) {
+  constructor(x, y, attributes) {
     this.x = x;
     this.y = y;
-    this.size = size;
     this.attributes = { ...attributes };
   };
 
@@ -17,8 +16,8 @@ class Entity {
     context.font = '16px Helvetica';
     context.fillText(
       this.attributes.ascii, 
-      this.x * this.size + (this.attributes.offset ? this.attributes.offset.x : 0), 
-      this.y * this.size + (this.attributes.offset ? this.attributes.offset.y : 0)
+      this.x * this.attributes.size + (this.attributes.offset ? this.attributes.offset.x : 0), 
+      this.y * this.attributes.size + (this.attributes.offset ? this.attributes.offset.y : 0)
     );
   };
 

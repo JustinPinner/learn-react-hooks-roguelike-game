@@ -50,7 +50,7 @@ const ReactRogue = ({width, height, tileSize}) => {
       ref={canvasRef}
       width={width * tileSize} 
       height={height * tileSize}
-      style={{ border: '1px solid black' }}
+      style={{ border: '1px solid black', background: 'DimGray' }}
     ></canvas>
   );
 };
