@@ -14,7 +14,8 @@ class Spawner {
 
   spawnLoot(spawnCount) {
     this.spawn(spawnCount, () => {
-      return new Loot(-1, -1, this.world.tileSize, this.world.lootTable[Math.floor(Math.random() * this.world.lootTable.length)]);
+      var whereToSpawn = this.world.findRandomSpace();
+      return new Loot(whereToSpawn.x, whereToSpawn.y, this.world.tileSize);
     });
   };
 }

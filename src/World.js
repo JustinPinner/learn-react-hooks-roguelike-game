@@ -1,25 +1,7 @@
 import { Map } from 'rot-js';
+import WorldEntity from './WorldEntity';
 import Player from './Player';
 import Spawner from './Spawner';
-
-const WorldEntity = {
-  EMPTY: 0,
-  WALL: 1,
-  LONGSWORD: 2,
-  HEALTH: 3,
-  GOLD: 4,
-  LIGHTARMOUR: 5,
-  UNKNOWN: 999
-};
-
-Object.freeze(WorldEntity);
-
-const LootTable = [
-  { id: WorldEntity.LONGSWORD, name: 'Longsword', colour: 'darkgrey', ascii: '/', offset: {x: 6, y: 3} },
-  { id: WorldEntity.HEALTH, name: 'Health', colour: 'red', ascii: '!', offset: {x: 6, y: 3} },
-  { id: WorldEntity.GOLD, name: 'Gold', colour: 'yellow', ascii: '$', offset: {x: 3, y: 3} },
-  { id: WorldEntity.LIGHTARMOUR, name: 'Light Armour', colour: 'lightgrey', ascii: '#', offset: {x: 4, y: 3} }
-];
 
 class World {
   constructor(width, height, tileSize) {
@@ -27,7 +9,6 @@ class World {
     this.height = height;
     this.tileSize = tileSize;
     this.entities = [];
-    this.lootTable = LootTable;
 
     this.worldMap = new Array(this.width);
     for (let x = 0; x < this.width; x++) {
@@ -47,10 +28,10 @@ class World {
     const dy2 = dy + this.player.y;
     // what's there? can we move?
     switch (this.whatsAt(dx2, dy2)) {
-      case WorldEntity.EMPTY:
-        this.player.move(dx, dy);
+      case WorldEntity.WALL:
         break;
       default:
+        this.player.move(dx, dy);
         break;
     }  
   };
@@ -86,8 +67,8 @@ class World {
   }
 
   findRandomSpace() {
-    let x = Math.floor(Math.random() * this.worldMap.length - 1);
-    let y = Math.floor(Math.random() * this.worldMap[0].length - 1);
+    let x = Math.floor(Math.random() * (this.worldMap.length - 1));
+    let y = Math.floor(Math.random() * (this.worldMap[0].length - 1));
     let tries = 0;
     let searchSpace = this.worldMap.length * this.worldMap[0].length;
     let available = false;
@@ -96,8 +77,8 @@ class World {
         available = true;
         break;
       }
-      x = Math.floor(Math.random() * this.worldMap.length - 1);
-      y = Math.floor(Math.random() * this.worldMap[0].length - 1);
+      x = Math.floor(Math.random() * (this.worldMap.length - 1));
+      y = Math.floor(Math.random() * (this.worldMap[0].length - 1));
       tries++;
     };
     return available ? { x: x, y: y } : undefined;
