@@ -9,9 +9,9 @@ const LootTable = [
 ];
 
 class Loot extends Entity {
-  constructor(x, y, worldRef) {
-    const whatAmI = LootTable[Math.floor(Math.random() * LootTable.length)]
-    super(x, y, whatAmI, worldRef)
+  constructor(x, y) {
+    const whatAmI = LootTable[Math.floor(Math.random() * LootTable.length)];
+    super(x, y, whatAmI);
   };
 
 };

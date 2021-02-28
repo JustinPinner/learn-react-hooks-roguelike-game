@@ -4,7 +4,10 @@ const WorldEntityTypes = {
   WALL: 1,
   PLAYER: 2,
   LOOT: 3,
-  ENEMY: 4,
+  GOBLIN: 4,
+  OGRE: 5,
+  ORC: 6,
+  TROLL: 7,
   UNKNOWN: 999
 };
 

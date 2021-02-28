@@ -9,6 +9,7 @@ class World {
     this.height = height;
     this.tileSize = tileSize;
     this.entities = [];
+    this.history = [];
 
     this.worldMap = new Array(this.width);
     for (let x = 0; x < this.width; x++) {
@@ -19,10 +20,16 @@ class World {
   };
 
   get player() {
-    return this.entities.filter((entity) => { return entity.attributes.type == WorldEntityTypes.PLAYER;})[0];
+    return this.entities.filter(entity => entity.attributes.type == WorldEntityTypes.PLAYER )[0];
   }
 
   movePlayer(dx, dy) {
+    /* 
+    * NOTE TO SELF: 
+    *   Any activity that changes the state of the world must be sent this object so it can be
+    *   updated. This is a bit sucky and I hope there's a better way to share global state
+    */
+
     // where are we headed?
     const dx2 = dx + this.player.x;
     const dy2 = dy + this.player.y;
@@ -36,12 +43,18 @@ class World {
         this.player.move(dx, dy);
         break;
 
+      case WorldEntityTypes.OGRE:
+      case WorldEntityTypes.ORC:
+      case WorldEntityTypes.GOBLIN:
+      case WorldEntityTypes.TROLL:
+        this.player.collide(dx2, dy2, this);  // <-- world-altering activity
+        break;
+
       default:
-        this.player.collide(dx2, dy2);
+        this.player.collide(dx2, dy2, this);  // <-- world-altering activity
         this.player.move(dx, dy);
         break;
-    }
-    return this.player.worldRef; 
+    };
   };
 
   whatsAt(x, y) {
@@ -61,15 +74,19 @@ class World {
       }
       this.worldMap[x][y] = value === 0 ? WorldEntityTypes.WALL : WorldEntityTypes.NOTHING;
       if (!this.player && this.worldMap[x][y] === WorldEntityTypes.NOTHING) {
-        this.entities.push(new Player(x, y, this));
+        this.entities.push(new Player(x, y));
       }
     };
     map.create(userCallback);
     map.connect(userCallback, 1);
   };
 
-  spawnLoot() {
-    this.spawner.spawnLoot(Math.floor(Math.random() * 8));
+  spawnLoot(optNum) {
+    this.spawner.spawnLoot(Math.floor(Math.random() * (optNum || 8)));
+  }
+
+  spawnMonsters(optNum) {
+    this.spawner.spawnMonsters(Math.floor(Math.random() * (optNum || 8)));
   }
 
   findRandomSpace() {
@@ -105,7 +122,11 @@ class World {
   remove(entity) {
     this.entities = this.entities.filter(worldEntity => worldEntity !== entity);
     this.worldMap[entity.x][entity.y] = WorldEntityTypes.NOTHING;
-  }
+  };
+
+  addToHistory(msg) {
+    this.history.push(msg);
+  };
 
   draw(context) {
     for (let x = 0; x < this.width; x++) {
@@ -116,8 +137,8 @@ class World {
         if (this.worldMap[x][y] === WorldEntityTypes.NOTHING) {
           this.drawSpace(context, x, y);
         }
-      }
-    }
+      };
+    };
     
     this.entities.forEach(entity => {
       entity.draw(context);

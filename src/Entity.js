@@ -7,11 +7,11 @@ class Entity {
     this.worldRef = worldRef
   };
 
-  collide(x, y) {
-    this.action('collide', {x: x, y: y});
+  collide(x, y, worldState) {
+    this.action('collide', {x: x, y: y}, worldState);
   }
 
-  action(verb, data) {
+  action(verb, data, worldState) {
     console.log(`Verb: ${verb} with data: ${data} unhandled on ${this.attributes ? this.attributes.name : 'no name'}`);
   };
 

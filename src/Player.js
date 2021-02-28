@@ -11,8 +11,8 @@ const defaultPlayerAttributes = {
 }
 
 class Player extends Entity {
-  constructor(x, y, worldRef) {
-    super(x, y, defaultPlayerAttributes, worldRef)
+  constructor(x, y) {
+    super(x, y, defaultPlayerAttributes)
   }
 
   inventory = [];
@@ -22,13 +22,19 @@ class Player extends Entity {
     this.y += dy;
   };
 
-  action(verb, data) {
+  action(verb, data, worldState) {
     if (verb === 'collide' ) {
-      const hitObject = this.worldRef.whatsAt(data.x, data.y);
+      const hitObject = worldState.whatsAt(data.x, data.y);
       switch (hitObject.attributes ? hitObject.attributes.type : hitObject) {
         case WorldEntityTypes.LOOT: 
           this.addInventory(hitObject);
-          this.worldRef.remove(hitObject);
+          worldState.remove(hitObject);
+          break;
+        case WorldEntityTypes.OGRE:
+        case WorldEntityTypes.ORC:
+        case WorldEntityTypes.GOBLIN:
+        case WorldEntityTypes.TROLL:
+          hitObject.action('Hit', {}, worldState);
           break;
         default:
           break;
