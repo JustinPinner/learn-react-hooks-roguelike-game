@@ -126,6 +126,7 @@ class World {
 
   addToHistory(msg) {
     this.history.push(msg);
+    if (this.history.length > 6) this.history.shift();
   };
 
   draw(context) {
