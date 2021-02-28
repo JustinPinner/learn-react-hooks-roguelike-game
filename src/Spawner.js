@@ -16,7 +16,7 @@ class Spawner {
     this.spawn(spawnCount, () => {
       var whereToSpawn = this.world.findRandomSpace();
       if (whereToSpawn) {
-        return new Loot(whereToSpawn.x, whereToSpawn.y, this.world.tileSize);
+        return new Loot(whereToSpawn.x, whereToSpawn.y, this.world);
       } else {
         console.log('spawnLoot failed - there was nowhere to spawn a new loot item');
       }

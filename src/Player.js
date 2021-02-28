@@ -1,7 +1,7 @@
 import Entity from './Entity';
 import WorldEntityTypes from './WorldEntityTypes';
 
-const playerAttributes = {
+const defaultPlayerAttributes = {
   type: WorldEntityTypes.PLAYER,
   name: 'Player',
   ascii: '@',
@@ -11,8 +11,8 @@ const playerAttributes = {
 }
 
 class Player extends Entity {
-  constructor(x, y) {
-    super(x, y, playerAttributes)
+  constructor(x, y, worldRef) {
+    super(x, y, defaultPlayerAttributes, worldRef)
   }
 
   inventory = [];
@@ -22,12 +22,26 @@ class Player extends Entity {
     this.y += dy;
   };
 
-  addInventory(entity) {
-    this.inventory.push(entity);
+  action(verb, data) {
+    if (verb === 'collide' ) {
+      const hitObject = this.worldRef.whatsAt(data.x, data.y);
+      switch (hitObject.attributes ? hitObject.attributes.type : hitObject) {
+        case WorldEntityTypes.LOOT: 
+          this.addInventory(hitObject);
+          this.worldRef.remove(hitObject);
+          break;
+        default:
+          break;
+      }
+    }    
   };
 
-  dropInventory(entity) {
-    this.inventory = this.inventory.filter((carriedEntity) => { return carriedEntity !== entity; });
+  addInventory(item) {
+    this.inventory.push(item);
+  };
+
+  dropInventory(item) {
+    this.inventory = this.inventory.filter((carriedEntity) => { return carriedEntity !== item; });
   };
 
 };

@@ -9,10 +9,11 @@ const ReactRogue = ({width, height, tileSize}) => {
   let inputManager = new InputManager();
 
   const handleInput = (action, data) => {
-    // console.log(`Handling input... ${action}:${JSON.stringify(data)}`);
+    // console.log(`Handling input... ${action}:${JSON.stringify(data)}`);    
     let newWorld = new World();
-    Object.assign(newWorld, world);
-    newWorld.movePlayer(data.x, data.y);
+    // movePlayer can change the state of the world, so it must return the new state
+    // this feels wrong (and isn't how it's done in the course, so probably is wrong) :(
+    Object.assign(newWorld, world.movePlayer(data.x, data.y));
     setWorld(newWorld);
   };
 
@@ -46,12 +47,17 @@ const ReactRogue = ({width, height, tileSize}) => {
   });
 
   return (
-    <canvas 
-      ref={canvasRef}
-      width={width * tileSize} 
-      height={height * tileSize}
-      style={{ border: '1px solid black', background: 'DimGray' }}
-    ></canvas>
+    <>
+      <canvas 
+        ref={canvasRef}
+        width={width * tileSize} 
+        height={height * tileSize}
+        style={{ border: '1px solid black', background: 'DimGray' }}
+      ></canvas>
+      <ul>
+        { world.player && world.player.inventory.map((item, index) => (<li key={index}>{item.attributes.name}</li>)) }
+      </ul>
+    </>
   );
 };
 

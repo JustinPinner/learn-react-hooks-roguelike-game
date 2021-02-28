@@ -32,17 +32,16 @@ class World {
       case WorldEntityTypes.WALL:
         break;
 
-      case WorldEntityTypes.LOOT:
-        this.player.addInventory(entity);
-        this.entities = this.entities.filter((worldEntity) => { return worldEntity !== entity; });
-        this.worldMap[dx2][dy2] = WorldEntityTypes.NOTHING;
+      case WorldEntityTypes.NOTHING:
         this.player.move(dx, dy);
         break;
 
       default:
+        this.player.collide(dx2, dy2);
         this.player.move(dx, dy);
         break;
-    }  
+    }
+    return this.player.worldRef; 
   };
 
   whatsAt(x, y) {
@@ -62,7 +61,7 @@ class World {
       }
       this.worldMap[x][y] = value === 0 ? WorldEntityTypes.WALL : WorldEntityTypes.NOTHING;
       if (!this.player && this.worldMap[x][y] === WorldEntityTypes.NOTHING) {
-        this.entities.push(new Player(x, y));
+        this.entities.push(new Player(x, y, this));
       }
     };
     map.create(userCallback);
@@ -103,11 +102,19 @@ class World {
     return false;
   };
 
+  remove(entity) {
+    this.entities = this.entities.filter(worldEntity => worldEntity !== entity);
+    this.worldMap[entity.x][entity.y] = WorldEntityTypes.NOTHING;
+  }
+
   draw(context) {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         if (this.worldMap[x][y] === WorldEntityTypes.WALL) {
           this.drawWall(context, x, y);
+        }
+        if (this.worldMap[x][y] === WorldEntityTypes.NOTHING) {
+          this.drawSpace(context, x, y);
         }
       }
     }
@@ -124,6 +131,21 @@ class World {
       y * this.tileSize, 
       this.tileSize, 
       this.tileSize
+    );
+  };
+
+  drawSpace(context, x, y) {
+    context.fillStyle = 'DimGray';
+    context.fillRect(
+      x * this.tileSize, 
+      y * this.tileSize, 
+      this.tileSize, 
+      this.tileSize
+    );
+    context.fillText(
+      ' ', 
+      x * this.tileSize, 
+      y * this.tileSize, 
     );
   };
 }

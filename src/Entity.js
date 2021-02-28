@@ -1,13 +1,18 @@
 
 class Entity {
-  constructor(x, y, attributes) {
+  constructor(x, y, attributes, worldRef) {
     this.x = x;
     this.y = y;
     this.attributes = { ...attributes };
+    this.worldRef = worldRef
   };
 
-  action(verb, world) {
-    console.log(`Verb: ${verb} unhandled on ${this.attributes ? this.attributes.name : 'no name'}`);
+  collide(x, y) {
+    this.action('collide', {x: x, y: y});
+  }
+
+  action(verb, data) {
+    console.log(`Verb: ${verb} with data: ${data} unhandled on ${this.attributes ? this.attributes.name : 'no name'}`);
   };
 
   draw(context) {
