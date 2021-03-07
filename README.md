@@ -23,6 +23,8 @@ Anyway as a result I've probably created some fun bugs for you to discover. And 
 
 And, although I'm sharing this code, not much of it is really mine, so please bear that in mind if you choose to use any of it. And definitely look at Morgan's course too, if you want to see how it should have been done :)
 
+Finally, if you're _really_ curious, [give it a spin via github pages](https://justinpinner.github.io/learn-react-hooks-roguelike-game/index.html)
+
 ## Available Scripts
 
 In the project directory, you can run:
