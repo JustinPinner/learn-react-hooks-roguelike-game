@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.js": "/learn-react-hooks-roguelike-game/static/js/main.ac9d52d3.chunk.js",
+    "main.js.map": "/learn-react-hooks-roguelike-game/static/js/main.ac9d52d3.chunk.js.map",
+    "runtime-main.js": "/learn-react-hooks-roguelike-game/static/js/runtime-main.1fbf1146.js",
+    "runtime-main.js.map": "/learn-react-hooks-roguelike-game/static/js/runtime-main.1fbf1146.js.map",
+    "static/js/2.d59a703b.chunk.js": "/learn-react-hooks-roguelike-game/static/js/2.d59a703b.chunk.js",
+    "static/js/2.d59a703b.chunk.js.map": "/learn-react-hooks-roguelike-game/static/js/2.d59a703b.chunk.js.map",
+    "index.html": "/learn-react-hooks-roguelike-game/index.html",
+    "static/js/2.d59a703b.chunk.js.LICENSE.txt": "/learn-react-hooks-roguelike-game/static/js/2.d59a703b.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.1fbf1146.js",
+    "static/js/2.d59a703b.chunk.js",
+    "static/js/main.ac9d52d3.chunk.js"
+  ]
+}
