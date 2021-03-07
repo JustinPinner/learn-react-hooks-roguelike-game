@@ -1,37 +1,39 @@
 import Loot from './Loot';
 import Monster from './Monster';
+import Player from './Player';
+import Stairs from './Stairs';
+import WorldLocationHints from './WorldLocationHints';
 
 class Spawner {
-  constructor(world) {
-    this.world = world;
-  }
   
-  spawn(spawnCount, f_createEntity) {
+  spawn(world, spawnCount, locationHint, f_createEntity) {
     for (let count = 0; count < spawnCount; count++) {
       let entity = f_createEntity();
-      this.world.add(entity);
-    }
+      world.addWithLocationHint(entity, locationHint);
+    };
   };
 
-  spawnLoot(spawnCount) {
-    this.spawn(spawnCount, () => {
-      const whereToSpawn = this.world.findRandomSpace();
-      if (whereToSpawn) {
-        return new Loot(whereToSpawn.x, whereToSpawn.y);
-      } else {
-        console.log('spawnLoot failed - there was nowhere to spawn a new loot item');
-      }
+  spawnPlayer(world) {
+    this.spawn(world, 1, WorldLocationHints.TOPLEFTQUAD, () => {
+      return new Player();
     });
   };
 
-  spawnMonsters(spawnCount) {
-    this.spawn(spawnCount, () => {
-      const whereToSpawn = this.world.findRandomSpace();
-      if (whereToSpawn) {
-        return new Monster(whereToSpawn.x, whereToSpawn.y);
-      } else {
-        console.log('spawnMonsters failed - there was nowhere to spawn a new monster');
-      }
+  spawnLoot(world, spawnCount) {
+    this.spawn(world, spawnCount, WorldLocationHints.RANDOM, () => {
+      return new Loot();
+    });
+  };
+
+  spawnMonsters(world, spawnCount) {
+    this.spawn(world, spawnCount, WorldLocationHints.RANDOM, () => {
+      return new Monster();
+   });
+  };
+
+  spawnStairs(world, spawnCount) {
+    this.spawn(world, spawnCount, WorldLocationHints.BOTTOMRIGHTQUAD, () => {
+      return new Stairs();
     });
   };
 

@@ -1,21 +1,19 @@
-import { Map } from 'rot-js';
 import WorldEntityTypes from './WorldEntityTypes';
+import WorldLocationHints from './WorldLocationHints';
 import Player from './Player';
 import Spawner from './Spawner';
+import WorldMap from './WorldMap';
 
 class World {
   constructor(width, height, tileSize) {
+    this.level = 0;
     this.width = width;
     this.height = height;
     this.tileSize = tileSize;
     this.entities = [];
     this.history = [];
-
-    this.worldMap = new Array(this.width);
-    for (let x = 0; x < this.width; x++) {
-      this.worldMap[x] = new Array(this.height);
-    }
-
+    this.levels = [];
+    this.worldMap = new WorldMap(width, height);
     this.spawner = new Spawner(this);
   };
 
@@ -24,23 +22,17 @@ class World {
   }
 
   movePlayer(dx, dy) {
-    /* 
-    * NOTE TO SELF: 
-    *   Any activity that changes the state of the world must be sent this object so it can be
-    *   updated. This is a bit sucky and I hope there's a better way to share global state
-    */
-
     // where are we headed?
     const dx2 = dx + this.player.x;
     const dy2 = dy + this.player.y;
     // what's there? can we move?
-    const entity = this.whatsAt(dx2, dy2);
+    const entity = this.worldMap.get(dx2, dy2);
     switch (entity.attributes ? entity.attributes.type : entity) {
       case WorldEntityTypes.WALL:
         break;
 
       case WorldEntityTypes.NOTHING:
-        this.player.move(dx, dy);
+        this.player.move(this, dx, dy);
         break;
 
       case WorldEntityTypes.OGRE:
@@ -52,76 +44,65 @@ class World {
 
       default:
         this.player.collide(dx2, dy2, this);  // <-- world-altering activity
-        this.player.move(dx, dy);
+        this.player.move(this, dx, dy);
         break;
     };
   };
 
   whatsAt(x, y) {
-    if (x < 0 || x > this.worldMap.length - 1) return; // 'invalid x'
-    if (y < 0 || y > this.worldMap[0].length - 1) return; // 'invalid y'  
     // worldMap can contain 0 (NOTHING), 1 (WALL), or an Entity type
-    return this.worldMap[x][y];
+    return this.worldMap.get(x, y);
   };
 
-  createCellularMap() {
-    const map = new Map.Cellular(this.width, this.height, {connected: true});
-    map.randomize(0.5);
-    const userCallback = (x,y,value) => {
-      if (x === 0 || y === 0 || x === this.width - 1 || y === this.height - 1) {
-        this.worldMap[x][y] = 1; // walls around the edge of the world
-        return;
-      }
-      this.worldMap[x][y] = value === 0 ? WorldEntityTypes.WALL : WorldEntityTypes.NOTHING;
-      if (!this.player && this.worldMap[x][y] === WorldEntityTypes.NOTHING) {
-        this.entities.push(new Player(x, y));
-      }
-    };
-    map.create(userCallback);
-    map.connect(userCallback, 1);
+  newLevel(levelNum) {
+    const playerState = new Player();
+    Object.assign(playerState, this.player);
+    const levelState = new WorldMap();
+    Object.assign(levelState, this.worldMap);
+    this.levels.push({level: this.level, map: levelState});
+    this.level = levelNum;
+    this.createMap();
+    this.spawnPlayer();
+    this.spawnLoot();
+    this.spawnMonsters();
+    this.spawnStairs();
+    this.player.inventory = playerState.inventory;
+  };
+
+  createMap() {
+    this.entities = [];
+    this.worldMap.newMap();
+  };
+
+  spawnPlayer() {
+    this.spawner.spawnPlayer(this, 1);
   };
 
   spawnLoot(optNum) {
-    this.spawner.spawnLoot(Math.floor(Math.random() * (optNum || 8)));
-  }
+    this.spawner.spawnLoot(this, Math.floor(Math.random() * (optNum || 8)));
+  };
 
   spawnMonsters(optNum) {
-    this.spawner.spawnMonsters(Math.floor(Math.random() * (optNum || 8)));
-  }
+    this.spawner.spawnMonsters(this, Math.floor(Math.random() * (optNum || 8)));
+  };
 
-  findRandomSpace() {
-    let x = Math.floor(Math.random() * (this.worldMap.length - 1));
-    let y = Math.floor(Math.random() * (this.worldMap[0].length - 1));
-    let tries = 0;
-    let searchSpace = this.worldMap.length * this.worldMap[0].length;
-    let available = false;
-    while (!available && tries < searchSpace) {
-      if (this.whatsAt(x, y) === WorldEntityTypes.NOTHING) {
-        available = true;
-        break;
-      }
-      x = Math.floor(Math.random() * (this.worldMap.length - 1));
-      y = Math.floor(Math.random() * (this.worldMap[0].length - 1));
-      tries++;
-    };
-    return available ? { x: x, y: y } : undefined;
+  spawnStairs(optNum) {
+    this.spawner.spawnStairs(this, optNum || 1);
+  };
+
+  addWithLocationHint(entity, worldLocationHint) {
+    this.worldMap.putApproximately(worldLocationHint || WorldLocationHints.RANDOM, entity);
+    this.entities.push(entity);  
   };
 
   add(entity) {
-    let location = this.findRandomSpace();
-    if (location) {
-      this.worldMap[location.x][location.y] = entity;
-      entity.x = location.x;
-      entity.y = location.y;
-      this.entities.push(entity);
-      return true;
-    }
-    return false;
+    this.addWithLocationHint(entity, WorldLocationHints.RANDOM);
+    return true;
   };
 
   remove(entity) {
     this.entities = this.entities.filter(worldEntity => worldEntity !== entity);
-    this.worldMap[entity.x][entity.y] = WorldEntityTypes.NOTHING;
+    this.worldMap.delete(entity.x, entity.y);
   };
 
   addToHistory(msg) {
@@ -132,10 +113,10 @@ class World {
   draw(context) {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        if (this.worldMap[x][y] === WorldEntityTypes.WALL) {
+        if (this.worldMap.get(x, y) === WorldEntityTypes.WALL) {
           this.drawWall(context, x, y);
         }
-        if (this.worldMap[x][y] === WorldEntityTypes.NOTHING) {
+        if (this.worldMap.get(x, y) === WorldEntityTypes.NOTHING) {
           this.drawSpace(context, x, y);
         }
       };

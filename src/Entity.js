@@ -1,10 +1,9 @@
 
 class Entity {
-  constructor(x, y, attributes, worldRef) {
+  constructor(x, y, attributes) {
     this.x = x;
     this.y = y;
     this.attributes = { ...attributes };
-    this.worldRef = worldRef
   };
 
   collide(x, y, worldState) {

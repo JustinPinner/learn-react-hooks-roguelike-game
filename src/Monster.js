@@ -16,7 +16,7 @@ class Monster extends Entity {
 
   action(verb, data, worldState) {
     switch (verb) {
-      case 'Hit':
+      case 'hit':
         worldState.addToHistory(`Player attacks ${this.attributes.name}!`);
         this.attributes.health -= 1;
         if (this.attributes.health <= 0) {

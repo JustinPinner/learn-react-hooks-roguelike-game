@@ -17,10 +17,12 @@ class Player extends Entity {
 
   inventory = [];
 
-  move(dx, dy) {
+  move(world, dx, dy) {
     if (this.attributes.health <= 0) return;
+    world.worldMap.delete(this.x, this.y);
     this.x += dx;
     this.y += dy;
+    world.worldMap.put(this.x, this.y, this);
   };
 
   action(verb, data, worldState) {
@@ -35,8 +37,10 @@ class Player extends Entity {
         case WorldEntityTypes.ORC:
         case WorldEntityTypes.GOBLIN:
         case WorldEntityTypes.TROLL:
-          hitObject.action('Hit', {}, worldState);
+          hitObject.action('hit', {}, worldState);
           break;
+        case WorldEntityTypes.STAIRS:
+          hitObject.action('interact', {}, worldState);
         default:
           break;
       }

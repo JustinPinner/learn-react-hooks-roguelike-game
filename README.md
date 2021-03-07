@@ -10,6 +10,19 @@ This project was created by following [Morgan Page](https://www.udemy.com/user/m
 
 on Udemy, where "Coding a roguelike game is  a great way to learn the fundamentals of React, Hooks and useful generic game concepts like movement, combat and inventories."
 
+Then I added some of my own interpretations. Which may or may not prove to be a good idea, but these include;
+
+* Creating the world map into its own class with clean get, put and delete methods etc
+* Adding specific entity types that can exist in the world
+* Guided randomisation of the location at which things get spawned into the world
+* Levels (currently, we only descend through the dungeon)
+* Storing each level's map when we descend to the next
+* Used non-traditional rogue-like symbols (I think - it's not my usual genre) for creatures, because a goblin wears a pointy hat and Orcs probably have tusks, right?
+
+Anyway as a result I've probably created some fun bugs for you to discover. And I'm pretty sure these interpretations deviate a bit from the React Warrior's code of conduct, but I don't care as it's the game-dev elements that I'm having more fun with TBH.
+
+And, although I'm sharing this code, not much of it is really mine, so please bear that in mind if you choose to use any of it. And definitely look at Morgan's course too, if you want to see how it should have been done :)
+
 ## Available Scripts
 
 In the project directory, you can run:

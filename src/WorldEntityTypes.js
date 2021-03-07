@@ -1,5 +1,6 @@
 
 const WorldEntityTypes = {
+  ERROR: -1,
   NOTHING: 0,
   WALL: 1,
   PLAYER: 2,
@@ -8,6 +9,7 @@ const WorldEntityTypes = {
   OGRE: 5,
   ORC: 6,
   TROLL: 7,
+  STAIRS: 99,
   UNKNOWN: 999
 };
 
