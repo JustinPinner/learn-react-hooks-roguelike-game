@@ -25,6 +25,10 @@ And, although I'm sharing this code, not much of it is really mine, so please be
 
 Finally, if you're _really_ curious, [give it a spin via github pages](https://justinpinner.github.io/learn-react-hooks-roguelike-game/index.html)
 
+### Big thanks also go to...
+
+This really useful [set of instructions](https://github.com/gitname/react-gh-pages) for getting a React app to deploy to github pages.
+
 ## Available Scripts
 
 In the project directory, you can run:
